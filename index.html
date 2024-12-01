@@ -65,6 +65,40 @@
             margin: 10px 0;
             width: 100%;
         }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-buttons button {
+            margin: 0;
+        }
+
+        .reminder-list-item {
+            border: 1px solid black;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .reminder-list-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        .back-button {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -72,11 +106,21 @@
         <!-- Home Screen -->
         <div id="homeScreen" class="screen active">
             <h1>My Reminders</h1>
-            <div id="currentReminder" class="reminder">
-                <p>No reminders yet. Add one below!</p>
+            <div class="nav-buttons">
+                <button onclick="showRandomView()">Random View</button>
+                <button onclick="showListView()">List View</button>
             </div>
-            <button onclick="showAddReminder()">Add New Reminder</button>
-            <button onclick="showRandomReminder()">Next Reminder</button>
+            <div id="randomView" class="active">
+                <div id="currentReminder" class="reminder">
+                    <p>No reminders yet. Add one below!</p>
+                </div>
+                <button onclick="showAddReminder()">Add New Reminder</button>
+                <button onclick="showRandomReminder()">Next Reminder</button>
+            </div>
+            <div id="listView" style="display: none">
+                <div id="remindersList"></div>
+                <button onclick="showAddReminder()">Add New Reminder</button>
+            </div>
         </div>
 
         <!-- Add Reminder Screen -->
@@ -87,6 +131,26 @@
             <button onclick="saveReminder()">Save Reminder</button>
             <button onclick="showHome()">Cancel</button>
         </div>
+
+        <!-- View/Edit Reminder Screen -->
+        <div id="viewReminderScreen" class="screen">
+            <button onclick="showListView()" class="back-button">Back to List</button>
+            <div id="viewReminderContent" class="reminder"></div>
+            <div class="button-group">
+                <button onclick="showEditReminder()">Edit</button>
+                <button onclick="deleteReminder()">Delete</button>
+            </div>
+        </div>
+
+        <!-- Edit Reminder Screen -->
+        <div id="editReminderScreen" class="screen">
+            <h1>Edit Reminder</h1>
+            <textarea id="editReminderText"></textarea>
+            <div class="button-group">
+                <button onclick="saveEditedReminder()">Save Changes</button>
+                <button onclick="cancelEdit()">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -95,9 +159,80 @@
             localStorage.setItem('reminders', JSON.stringify([]));
         }
 
+        let currentReminderIndex = null;
+
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
+        }
+
+        function showRandomView() {
+            document.getElementById('randomView').style.display = 'block';
+            document.getElementById('listView').style.display = 'none';
+            showRandomReminder();
+        }
+
+        function showListView() {
+            document.getElementById('randomView').style.display = 'none';
+            document.getElementById('listView').style.display = 'block';
+            showScreen('homeScreen');
+            updateRemindersList();
+        }
+
+        function updateRemindersList() {
+            const reminders = JSON.parse(localStorage.getItem('reminders'));
+            const listDiv = document.getElementById('remindersList');
+            listDiv.innerHTML = '';
+
+            reminders.forEach((reminder, index) => {
+                const preview = reminder.text.split('.')[0] + '...';
+                const div = document.createElement('div');
+                div.className = 'reminder-list-item';
+                div.textContent = preview;
+                div.onclick = () => viewReminder(index);
+                listDiv.appendChild(div);
+            });
+        }
+
+        function viewReminder(index) {
+            currentReminderIndex = index;
+            const reminders = JSON.parse(localStorage.getItem('reminders'));
+            const reminder = reminders[index];
+            const contentDiv = document.getElementById('viewReminderContent');
+            
+            let html = `<p>${reminder.text}</p>`;
+            if (reminder.image) {
+                html += `<img src="${reminder.image}" alt="Reminder image">`;
+            }
+            contentDiv.innerHTML = html;
+            
+            showScreen('viewReminderScreen');
+        }
+
+        function showEditReminder() {
+            const reminders = JSON.parse(localStorage.getItem('reminders'));
+            document.getElementById('editReminderText').value = reminders[currentReminderIndex].text;
+            showScreen('editReminderScreen');
+        }
+
+        function saveEditedReminder() {
+            const reminders = JSON.parse(localStorage.getItem('reminders'));
+            reminders[currentReminderIndex].text = document.getElementById('editReminderText').value;
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            viewReminder(currentReminderIndex);
+        }
+
+        function cancelEdit() {
+            viewReminder(currentReminderIndex);
+        }
+
+        function deleteReminder() {
+            if (confirm('Are you sure you want to delete this reminder?')) {
+                const reminders = JSON.parse(localStorage.getItem('reminders'));
+                reminders.splice(currentReminderIndex, 1);
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                showListView();
+            }
         }
 
         function showAddReminder() {
