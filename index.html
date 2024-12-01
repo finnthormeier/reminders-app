@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reminders</title>
+    <style>
+        body {
+            font-family: Georgia, serif;
+            margin: 0;
+            padding: 20px;
+            background: white;
+            color: black;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        button {
+            font-family: Georgia, serif;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .reminder {
+            border: 1px solid black;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .reminder img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin: 10px 0;
+            padding: 8px;
+            font-family: Georgia, serif;
+            box-sizing: border-box;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Home Screen -->
+        <div id="homeScreen" class="screen active">
+            <h1>My Reminders</h1>
+            <div id="currentReminder" class="reminder">
+                <p>No reminders yet. Add one below!</p>
+            </div>
+            <button onclick="showAddReminder()">Add New Reminder</button>
+            <button onclick="showRandomReminder()">Next Reminder</button>
+        </div>
+
+        <!-- Add Reminder Screen -->
+        <div id="addReminderScreen" class="screen">
+            <h1>Add New Reminder</h1>
+            <textarea id="reminderText" placeholder="Enter your reminder"></textarea>
+            <input type="file" id="reminderImage" accept="image/*">
+            <button onclick="saveReminder()">Save Reminder</button>
+            <button onclick="showHome()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize local storage
+        if (!localStorage.getItem('reminders')) {
+            localStorage.setItem('reminders', JSON.stringify([]));
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showAddReminder() {
+            showScreen('addReminderScreen');
+        }
+
+        function showHome() {
+            showScreen('homeScreen');
+            showRandomReminder();
+        }
+
+        function saveReminder() {
+            const text = document.getElementById('reminderText').value;
+            const imageFile = document.getElementById('reminderImage').files[0];
+            
+            if (!text) {
+                alert('Please enter some text for your reminder');
+                return;
+            }
+
+            const reminder = { text: text, image: null };
+            const reminders = JSON.parse(localStorage.getItem('reminders'));
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    reminder.image = reader.result;
+                    reminders.push(reminder);
+                    localStorage.setItem('reminders', JSON.stringify(reminders));
+                    document.getElementById('reminderText').value = '';
+                    document.getElementById('reminderImage').value = '';
+                    showHome();
+                }
+                reader.readAsDataURL(imageFile);
+            } else {
+                reminders.push(reminder);
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                document.getElementById('reminderText').value = '';
+                document.getElementById('reminderImage').value = '';
+                showHome();
+            }
+        }
+
+        function showRandomReminder() {
+            const reminders = JSON.parse(localStorage.getItem('reminders'));
+            const reminderDiv = document.getElementById('currentReminder');
+
+            if (reminders.length === 0) {
+                reminderDiv.innerHTML = '<p>No reminders yet. Add one below!</p>';
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * reminders.length);
+            const reminder = reminders[randomIndex];
+            
+            let html = `<p>${reminder.text}</p>`;
+            if (reminder.image) {
+                html += `<img src="${reminder.image}" alt="Reminder image">`;
+            }
+            reminderDiv.innerHTML = html;
+        }
+
+        // Show initial reminder
+        showRandomReminder();
+    </script>
+</body>
+</html>
