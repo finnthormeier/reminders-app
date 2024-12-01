@@ -5,21 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Reminders</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Georgia, serif;
-            margin: 0;
+            line-height: 1.6;
+            background: #F9F9F9;
+            color: #141414;
             padding: 20px;
-            background: white;
-            color: black;
         }
 
         .container {
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 700px;
+            margin: 0 auto 80px auto; /* Added bottom margin for nav */
+            background: #F9F9F9;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(20, 20, 20, 0.06);
+            min-height: calc(100vh - 120px);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: normal;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
         }
 
         .screen {
             display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .active {
@@ -28,76 +53,162 @@
 
         button {
             font-family: Georgia, serif;
-            margin: 10px 0;
-            padding: 10px;
-            width: 100%;
-            background: black;
-            color: white;
+            padding: 12px 24px;
+            background: #141414;
+            color: #F9F9F9;
             border: none;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 15px;
+            width: 100%;
         }
 
         button:hover {
-            opacity: 0.8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(20, 20, 20, 0.1);
         }
 
         .reminder {
-            border: 1px solid black;
-            padding: 20px;
+            border: 1px solid rgba(20, 20, 20, 0.1);
+            padding: 24px;
             margin: 20px 0;
+            border-radius: 12px;
+            background: #F9F9F9;
+            box-shadow: 0 2px 8px rgba(20, 20, 20, 0.04);
         }
 
         .reminder img {
             max-width: 100%;
-            margin-top: 10px;
+            margin-top: 16px;
+            border-radius: 8px;
         }
 
         textarea {
             width: 100%;
-            height: 100px;
-            margin: 10px 0;
-            padding: 8px;
+            height: 120px;
+            margin: 16px 0;
+            padding: 16px;
             font-family: Georgia, serif;
-            box-sizing: border-box;
+            border: 1px solid rgba(20, 20, 20, 0.1);
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            background: #F9F9F9;
+            color: #141414;
         }
 
-        input[type="file"] {
-            margin: 10px 0;
+        textarea:focus {
+            outline: none;
+            border-color: #141414;
+        }
+
+        .image-upload {
+            margin: 16px 0;
             width: 100%;
+            padding: 20px;
+            border: 2px dashed rgba(20, 20, 20, 0.2);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .nav-buttons {
+        .image-upload:hover {
+            border-color: #141414;
+            background: rgba(20, 20, 20, 0.02);
+        }
+
+        .image-upload input[type="file"] {
+            display: none;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #F9F9F9;
+            padding: 16px;
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(20, 20, 20, 0.1);
+            z-index: 1000;
         }
 
-        .nav-buttons button {
-            margin: 0;
+        .nav-item {
+            padding: 8px 24px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active {
+            background: rgba(20, 20, 20, 0.1);
+        }
+
+        .add-button {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background: #141414;
+            color: #F9F9F9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(20, 20, 20, 0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .add-button:hover {
+            transform: scale(1.1);
         }
 
         .reminder-list-item {
-            border: 1px solid black;
-            padding: 15px;
-            margin: 10px 0;
+            padding: 20px;
+            margin: 12px 0;
             cursor: pointer;
+            border-radius: 12px;
+            background: #F9F9F9;
+            border: 1px solid rgba(20, 20, 20, 0.1);
+            transition: all 0.2s ease;
         }
 
         .reminder-list-item:hover {
-            background-color: #f5f5f5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(20, 20, 20, 0.08);
         }
 
-        .button-group {
-            display: flex;
-            gap: 10px;
+        .settings-input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 16px 0;
+            border: 1px solid rgba(20, 20, 20, 0.1);
+            border-radius: 8px;
+            font-family: Georgia, serif;
+            background: #F9F9F9;
+            color: #141414;
         }
 
-        .button-group button {
-            flex: 1;
+        .settings-input:focus {
+            outline: none;
+            border-color: #141414;
         }
 
-        .back-button {
-            margin-bottom: 20px;
+        .settings-group {
+            margin-bottom: 24px;
+        }
+
+        .settings-label {
+            font-size: 14px;
+            color: rgba(20, 20, 20, 0.6);
         }
     </style>
 </head>
@@ -106,83 +217,178 @@
         <!-- Home Screen -->
         <div id="homeScreen" class="screen active">
             <h1>My Reminders</h1>
-            <div class="nav-buttons">
-                <button onclick="showRandomView()">Random View</button>
-                <button onclick="showListView()">List View</button>
-            </div>
             <div id="randomView" class="active">
                 <div id="currentReminder" class="reminder">
                     <p>No reminders yet. Add one below!</p>
                 </div>
-                <button onclick="showAddReminder()">Add New Reminder</button>
-                <button onclick="showRandomReminder()">Next Reminder</button>
             </div>
             <div id="listView" style="display: none">
                 <div id="remindersList"></div>
-                <button onclick="showAddReminder()">Add New Reminder</button>
+            </div>
+            <div id="settingsView" style="display: none">
+                <div class="settings-group">
+                    <div class="settings-label">First Name</div>
+                    <input type="text" id="firstName" class="settings-input">
+                </div>
+                <div class="settings-group">
+                    <div class="settings-label">Last Name</div>
+                    <input type="text" id="lastName" class="settings-input">
+                </div>
+                <div class="settings-group">
+                    <div class="settings-label">Email</div>
+                    <input type="email" id="email" class="settings-input">
+                </div>
+                <div class="settings-group">
+                    <div class="settings-label">Phone Number</div>
+                    <input type="tel" id="phone" class="settings-input">
+                </div>
+                <button onclick="saveSettings()">Save Settings</button>
             </div>
         </div>
 
         <!-- Add Reminder Screen -->
         <div id="addReminderScreen" class="screen">
+            <button onclick="showHome()" class="back-button">← Back</button>
             <h1>Add New Reminder</h1>
             <textarea id="reminderText" placeholder="Enter your reminder"></textarea>
-            <input type="file" id="reminderImage" accept="image/*">
-            <button onclick="saveReminder()">Save Reminder</button>
-            <button onclick="showHome()">Cancel</button>
+            <label class="image-upload">
+                <input type="file" id="reminderImage" accept="image/*" onchange="updateImageLabel(this)">
+                <span id="imageLabel">Click to add an image to your reminder</span>
+            </label>
+            <div class="button-group">
+                <button onclick="saveReminder()">Save Reminder</button>
+            </div>
         </div>
 
         <!-- View/Edit Reminder Screen -->
         <div id="viewReminderScreen" class="screen">
-            <button onclick="showListView()" class="back-button">Back to List</button>
+            <button onclick="showListView()" class="back-button">← Back to List</button>
             <div id="viewReminderContent" class="reminder"></div>
             <div class="button-group">
                 <button onclick="showEditReminder()">Edit</button>
-                <button onclick="deleteReminder()">Delete</button>
+                <button onclick="deleteReminder()" class="delete-button">Delete</button>
             </div>
         </div>
 
         <!-- Edit Reminder Screen -->
         <div id="editReminderScreen" class="screen">
+            <button onclick="cancelEdit()" class="back-button">← Back</button>
             <h1>Edit Reminder</h1>
             <textarea id="editReminderText"></textarea>
             <div class="button-group">
                 <button onclick="saveEditedReminder()">Save Changes</button>
-                <button onclick="cancelEdit()">Cancel</button>
             </div>
         </div>
     </div>
 
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="showRandomView()">Random</div>
+        <div class="nav-item" onclick="showListView()">List</div>
+        <div class="nav-item" onclick="showSettingsView()">Settings</div>
+    </div>
+
+    <!-- Add Button -->
+    <div class="add-button" onclick="showAddReminder()">+</div>
+
     <script>
-        // Initialize local storage
+        // Initialize storage
         if (!localStorage.getItem('reminders')) {
             localStorage.setItem('reminders', JSON.stringify([]));
+        }
+        if (!localStorage.getItem('userSettings')) {
+            localStorage.setItem('userSettings', JSON.stringify({
+                firstName: '',
+                lastName: '',
+                email: '',
+                phone: ''
+            }));
         }
 
         let currentReminderIndex = null;
 
+        function updateImageLabel(input) {
+            const label = document.getElementById('imageLabel');
+            if (input.files.length > 0) {
+                label.textContent = `Selected: ${input.files[0].name}`;
+            } else {
+                label.textContent = 'Click to add an image to your reminder';
+            }
+        }
+
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            const currentView = document.querySelector('.screen.active').id;
+            if (currentView === 'homeScreen') {
+                if (document.getElementById('randomView').style.display !== 'none') {
+                    document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+                } else if (document.getElementById('listView').style.display !== 'none') {
+                    document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+                } else if (document.getElementById('settingsView').style.display !== 'none') {
+                    document.querySelector('.nav-item:nth-child(3)').classList.add('active');
+                }
+            }
         }
 
         function showRandomView() {
             document.getElementById('randomView').style.display = 'block';
             document.getElementById('listView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'none';
+            showScreen('homeScreen');
             showRandomReminder();
         }
 
         function showListView() {
             document.getElementById('randomView').style.display = 'none';
             document.getElementById('listView').style.display = 'block';
+            document.getElementById('settingsView').style.display = 'none';
             showScreen('homeScreen');
             updateRemindersList();
         }
 
+        function showSettingsView() {
+            document.getElementById('randomView').style.display = 'none';
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('settingsView').style.display = 'block';
+            showScreen('homeScreen');
+            loadSettings();
+        }
+
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('userSettings'));
+            document.getElementById('firstName').value = settings.firstName;
+            document.getElementById('lastName').value = settings.lastName;
+            document.getElementById('email').value = settings.email;
+            document.getElementById('phone').value = settings.phone;
+        }
+
+        function saveSettings() {
+            const settings = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value
+            };
+            localStorage.setItem('userSettings', JSON.stringify(settings));
+            alert('Settings saved successfully!');
+        }
+
+        // [Rest of the JavaScript functions remain the same]
         function updateRemindersList() {
             const reminders = JSON.parse(localStorage.getItem('reminders'));
             const listDiv = document.getElementById('remindersList');
             listDiv.innerHTML = '';
+
+            if (reminders.length === 0) {
+                listDiv.innerHTML = '<p class="empty-state">No reminders yet. Add one below!</p>';
+                return;
+            }
 
             reminders.forEach((reminder, index) => {
                 const preview = reminder.text.split('.')[0] + '...';
@@ -229,74 +435,4 @@
         function deleteReminder() {
             if (confirm('Are you sure you want to delete this reminder?')) {
                 const reminders = JSON.parse(localStorage.getItem('reminders'));
-                reminders.splice(currentReminderIndex, 1);
-                localStorage.setItem('reminders', JSON.stringify(reminders));
-                showListView();
-            }
-        }
-
-        function showAddReminder() {
-            showScreen('addReminderScreen');
-        }
-
-        function showHome() {
-            showScreen('homeScreen');
-            showRandomReminder();
-        }
-
-        function saveReminder() {
-            const text = document.getElementById('reminderText').value;
-            const imageFile = document.getElementById('reminderImage').files[0];
-            
-            if (!text) {
-                alert('Please enter some text for your reminder');
-                return;
-            }
-
-            const reminder = { text: text, image: null };
-            const reminders = JSON.parse(localStorage.getItem('reminders'));
-
-            if (imageFile) {
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    reminder.image = reader.result;
-                    reminders.push(reminder);
-                    localStorage.setItem('reminders', JSON.stringify(reminders));
-                    document.getElementById('reminderText').value = '';
-                    document.getElementById('reminderImage').value = '';
-                    showHome();
-                }
-                reader.readAsDataURL(imageFile);
-            } else {
-                reminders.push(reminder);
-                localStorage.setItem('reminders', JSON.stringify(reminders));
-                document.getElementById('reminderText').value = '';
-                document.getElementById('reminderImage').value = '';
-                showHome();
-            }
-        }
-
-        function showRandomReminder() {
-            const reminders = JSON.parse(localStorage.getItem('reminders'));
-            const reminderDiv = document.getElementById('currentReminder');
-
-            if (reminders.length === 0) {
-                reminderDiv.innerHTML = '<p>No reminders yet. Add one below!</p>';
-                return;
-            }
-
-            const randomIndex = Math.floor(Math.random() * reminders.length);
-            const reminder = reminders[randomIndex];
-            
-            let html = `<p>${reminder.text}</p>`;
-            if (reminder.image) {
-                html += `<img src="${reminder.image}" alt="Reminder image">`;
-            }
-            reminderDiv.innerHTML = html;
-        }
-
-        // Show initial reminder
-        showRandomReminder();
-    </script>
-</body>
-</html>
+                reminders.splice(current
