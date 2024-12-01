@@ -17,16 +17,17 @@
             background: #F9F9F9;
             color: #141414;
             padding: 20px;
+            padding-bottom: 100px;
         }
 
         .container {
             max-width: 700px;
-            margin: 0 auto 80px auto; /* Added bottom margin for nav */
+            margin: 0 auto;
             background: #F9F9F9;
             padding: 32px;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(20, 20, 20, 0.06);
-            min-height: calc(100vh - 120px);
+            min-height: calc(100vh - 140px);
             position: relative;
         }
 
@@ -82,45 +83,6 @@
             max-width: 100%;
             margin-top: 16px;
             border-radius: 8px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 120px;
-            margin: 16px 0;
-            padding: 16px;
-            font-family: Georgia, serif;
-            border: 1px solid rgba(20, 20, 20, 0.1);
-            border-radius: 8px;
-            font-size: 16px;
-            resize: vertical;
-            background: #F9F9F9;
-            color: #141414;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: #141414;
-        }
-
-        .image-upload {
-            margin: 16px 0;
-            width: 100%;
-            padding: 20px;
-            border: 2px dashed rgba(20, 20, 20, 0.2);
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .image-upload:hover {
-            border-color: #141414;
-            background: rgba(20, 20, 20, 0.02);
-        }
-
-        .image-upload input[type="file"] {
-            display: none;
         }
 
         .bottom-nav {
@@ -186,6 +148,46 @@
             box-shadow: 0 4px 12px rgba(20, 20, 20, 0.08);
         }
 
+        textarea {
+            width: 100%;
+            height: 120px;
+            margin: 16px 0;
+            padding: 16px;
+            font-family: Georgia, serif;
+            border: 1px solid rgba(20, 20, 20, 0.1);
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            background: #F9F9F9;
+        }
+
+        .image-upload {
+            margin: 16px 0;
+            width: 100%;
+            padding: 20px;
+            border: 2px dashed rgba(20, 20, 20, 0.2);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .image-upload:hover {
+            border-color: #141414;
+            background: rgba(20, 20, 20, 0.02);
+        }
+
+        .image-upload input[type="file"] {
+            display: none;
+        }
+
+        .back-button {
+            margin-bottom: 20px;
+            background: transparent;
+            color: #141414;
+            border: 1px solid rgba(20, 20, 20, 0.1);
+        }
+
         .settings-input {
             width: 100%;
             padding: 12px;
@@ -193,91 +195,90 @@
             border: 1px solid rgba(20, 20, 20, 0.1);
             border-radius: 8px;
             font-family: Georgia, serif;
-            background: #F9F9F9;
-            color: #141414;
-        }
-
-        .settings-input:focus {
-            outline: none;
-            border-color: #141414;
-        }
-
-        .settings-group {
-            margin-bottom: 24px;
         }
 
         .settings-label {
             font-size: 14px;
             color: rgba(20, 20, 20, 0.6);
         }
+
+        .settings-group {
+            margin-bottom: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: rgba(20, 20, 20, 0.6);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Home Screen -->
-        <div id="homeScreen" class="screen active">
-            <h1>My Reminders</h1>
-            <div id="randomView" class="active">
-                <div id="currentReminder" class="reminder">
-                    <p>No reminders yet. Add one below!</p>
-                </div>
+        <!-- Random View -->
+        <div id="randomScreen" class="screen">
+            <h1>Random Reminder</h1>
+            <div id="currentReminder" class="reminder">
+                <p class="empty-state">No reminders yet. Click + to add one!</p>
             </div>
-            <div id="listView" style="display: none">
-                <div id="remindersList"></div>
-            </div>
-            <div id="settingsView" style="display: none">
-                <div class="settings-group">
-                    <div class="settings-label">First Name</div>
-                    <input type="text" id="firstName" class="settings-input">
-                </div>
-                <div class="settings-group">
-                    <div class="settings-label">Last Name</div>
-                    <input type="text" id="lastName" class="settings-input">
-                </div>
-                <div class="settings-group">
-                    <div class="settings-label">Email</div>
-                    <input type="email" id="email" class="settings-input">
-                </div>
-                <div class="settings-group">
-                    <div class="settings-label">Phone Number</div>
-                    <input type="tel" id="phone" class="settings-input">
-                </div>
-                <button onclick="saveSettings()">Save Settings</button>
-            </div>
+            <button onclick="showRandomReminder()">Next Random Reminder</button>
         </div>
 
-        <!-- Add Reminder Screen -->
-        <div id="addReminderScreen" class="screen">
-            <button onclick="showHome()" class="back-button">← Back</button>
-            <h1>Add New Reminder</h1>
+        <!-- List View -->
+        <div id="listScreen" class="screen">
+            <h1>All Reminders</h1>
+            <div id="remindersList"></div>
+        </div>
+
+        <!-- Add Reminder -->
+        <div id="addScreen" class="screen">
+            <h1>New Reminder</h1>
             <textarea id="reminderText" placeholder="Enter your reminder"></textarea>
             <label class="image-upload">
                 <input type="file" id="reminderImage" accept="image/*" onchange="updateImageLabel(this)">
                 <span id="imageLabel">Click to add an image to your reminder</span>
             </label>
-            <div class="button-group">
-                <button onclick="saveReminder()">Save Reminder</button>
-            </div>
+            <button onclick="saveReminder()">Save Reminder</button>
         </div>
 
-        <!-- View/Edit Reminder Screen -->
-        <div id="viewReminderScreen" class="screen">
+        <!-- Settings -->
+        <div id="settingsScreen" class="screen">
+            <h1>Settings</h1>
+            <div class="settings-group">
+                <div class="settings-label">First Name</div>
+                <input type="text" id="firstName" class="settings-input">
+            </div>
+            <div class="settings-group">
+                <div class="settings-label">Last Name</div>
+                <input type="text" id="lastName" class="settings-input">
+            </div>
+            <div class="settings-group">
+                <div class="settings-label">Email</div>
+                <input type="email" id="email" class="settings-input">
+            </div>
+            <div class="settings-group">
+                <div class="settings-label">Phone Number</div>
+                <input type="tel" id="phone" class="settings-input">
+            </div>
+            <button onclick="saveSettings()">Save Settings</button>
+        </div>
+
+        <!-- View Single Reminder -->
+        <div id="viewScreen" class="screen">
             <button onclick="showListView()" class="back-button">← Back to List</button>
             <div id="viewReminderContent" class="reminder"></div>
-            <div class="button-group">
+            <div style="display: flex; gap: 10px;">
                 <button onclick="showEditReminder()">Edit</button>
-                <button onclick="deleteReminder()" class="delete-button">Delete</button>
+                <button onclick="deleteReminder()" style="background: #ff4444;">Delete</button>
             </div>
         </div>
 
-        <!-- Edit Reminder Screen -->
-        <div id="editReminderScreen" class="screen">
+        <!-- Edit Reminder -->
+        <div id="editScreen" class="screen">
             <button onclick="cancelEdit()" class="back-button">← Back</button>
             <h1>Edit Reminder</h1>
             <textarea id="editReminderText"></textarea>
-            <div class="button-group">
-                <button onclick="saveEditedReminder()">Save Changes</button>
-            </div>
+            <button onclick="saveEditedReminder()">Save Changes</button>
         </div>
     </div>
 
@@ -289,7 +290,7 @@
     </div>
 
     <!-- Add Button -->
-    <div class="add-button" onclick="showAddReminder()">+</div>
+    <div class="add-button" onclick="showAddView()">+</div>
 
     <script>
         // Initialize storage
@@ -307,15 +308,6 @@
 
         let currentReminderIndex = null;
 
-        function updateImageLabel(input) {
-            const label = document.getElementById('imageLabel');
-            if (input.files.length > 0) {
-                label.textContent = `Selected: ${input.files[0].name}`;
-            } else {
-                label.textContent = 'Click to add an image to your reminder';
-            }
-        }
-
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
@@ -324,40 +316,42 @@
 
         function updateNavigation() {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            const currentView = document.querySelector('.screen.active').id;
-            if (currentView === 'homeScreen') {
-                if (document.getElementById('randomView').style.display !== 'none') {
-                    document.querySelector('.nav-item:nth-child(1)').classList.add('active');
-                } else if (document.getElementById('listView').style.display !== 'none') {
-                    document.querySelector('.nav-item:nth-child(2)').classList.add('active');
-                } else if (document.getElementById('settingsView').style.display !== 'none') {
-                    document.querySelector('.nav-item:nth-child(3)').classList.add('active');
-                }
+            const activeScreen = document.querySelector('.screen.active').id;
+            if (activeScreen === 'randomScreen') {
+                document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+            } else if (activeScreen === 'listScreen') {
+                document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+            } else if (activeScreen === 'settingsScreen') {
+                document.querySelector('.nav-item:nth-child(3)').classList.add('active');
             }
         }
 
         function showRandomView() {
-            document.getElementById('randomView').style.display = 'block';
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('settingsView').style.display = 'none';
-            showScreen('homeScreen');
+            showScreen('randomScreen');
             showRandomReminder();
         }
 
         function showListView() {
-            document.getElementById('randomView').style.display = 'none';
-            document.getElementById('listView').style.display = 'block';
-            document.getElementById('settingsView').style.display = 'none';
-            showScreen('homeScreen');
+            showScreen('listScreen');
             updateRemindersList();
         }
 
         function showSettingsView() {
-            document.getElementById('randomView').style.display = 'none';
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('settingsView').style.display = 'block';
-            showScreen('homeScreen');
+            showScreen('settingsScreen');
             loadSettings();
+        }
+
+        function showAddView() {
+            showScreen('addScreen');
+        }
+
+        function updateImageLabel(input) {
+            const label = document.getElementById('imageLabel');
+            if (input.files.length > 0) {
+                label.textContent = `Selected: ${input.files[0].name}`;
+            } else {
+                label.textContent = 'Click to add an image to your reminder';
+            }
         }
 
         function loadSettings() {
@@ -379,14 +373,13 @@
             alert('Settings saved successfully!');
         }
 
-        // [Rest of the JavaScript functions remain the same]
         function updateRemindersList() {
             const reminders = JSON.parse(localStorage.getItem('reminders'));
             const listDiv = document.getElementById('remindersList');
             listDiv.innerHTML = '';
 
             if (reminders.length === 0) {
-                listDiv.innerHTML = '<p class="empty-state">No reminders yet. Add one below!</p>';
+                listDiv.innerHTML = '<p class="empty-state">No reminders yet. Click + to add one!</p>';
                 return;
             }
 
@@ -412,13 +405,13 @@
             }
             contentDiv.innerHTML = html;
             
-            showScreen('viewReminderScreen');
+            showScreen('viewScreen');
         }
 
         function showEditReminder() {
             const reminders = JSON.parse(localStorage.getItem('reminders'));
             document.getElementById('editReminderText').value = reminders[currentReminderIndex].text;
-            showScreen('editReminderScreen');
+            showScreen('editScreen');
         }
 
         function saveEditedReminder() {
@@ -435,4 +428,63 @@
         function deleteReminder() {
             if (confirm('Are you sure you want to delete this reminder?')) {
                 const reminders = JSON.parse(localStorage.getItem('reminders'));
-                reminders.splice(current
+                reminders.splice(currentReminderIndex, 1);
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                showListView();
+            }
+        }
+
+        function saveReminder() {
+            const text = document.getElementById('reminderText').value;
+            const imageFile = document.getElementById('reminderImage').files[0];
+            
+            if (!text) {
+                alert('Please enter some text for your reminder');
+                return;
+            }
+
+            const reminder = { text: text, image: null };
+            const reminders = JSON.parse(localStorage.getItem('reminders'));
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    reminder.image = reader.result;
+                    reminders.push(reminder);
+                    localStorage.setItem('reminders', JSON.stringify(reminders));
+                    document.getElementById('reminderText').value = '';
+                    document.getElementById('reminderImage').value = '';
+                    document.getElementById('imageLabel').textContent = 'Click to add an image to your reminder';
+                    showRandomView();
+                }
+                reader.readAsDataURL(imageFile);
+            } else {
+                reminders.push(reminder);
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                document.getElementById('reminderText').value = '';
+                document.getElementById('reminderImage').value = '';
+                showRandomView();
+            }
+        }
+
+        function showRandomReminder() {
+            const reminders = JSON.parse(localStorage.getItem('reminders'));
+            const reminderDiv = document.getElementById('currentReminder');
+
+            if (reminders.length === 0) {
+                reminderDiv.innerHTML = '<p class="empty-state">No reminders yet. Click + to add one!</p>';
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * reminders.length);
+            const reminder = reminders[randomIndex];
+            
+            let html = `<p>${reminder.text}</p>`;
+            if (reminder.image) {
+                html += `<img src="${reminder.image}" alt="Reminder image">`;
+            }
+            reminderDiv.innerHTML = html;
+        }
+
+        // Start with random view
+        showRandomView();
